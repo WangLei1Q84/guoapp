@@ -71,7 +71,7 @@ void main() {
       await tester.ensureVisible(find.text('加入追剧'));
       await tester.tap(find.text('加入追剧'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('想看'));
+      await tester.tap(find.widgetWithText(CheckedPopupMenuItem<String>, '想看'));
       await tester.pumpAndSettle();
       expect(local.isFavorite(FixtureRepository.free.id), isTrue);
       for (final episode in [1, 2]) {

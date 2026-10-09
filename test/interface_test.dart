@@ -99,7 +99,10 @@ void main() {
       if (SourceGroup.fromSources(SourceSite.values).length <= 1) return;
       await tester.tap(find.byKey(const ValueKey('source-switch')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(name).last);
+      final source = find.widgetWithText(PopupMenuItem<SourceGroup>, name);
+      await tester.ensureVisible(source);
+      await tester.pumpAndSettle();
+      await tester.tap(source);
       await tester.pumpAndSettle();
     }
 

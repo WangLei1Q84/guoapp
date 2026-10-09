@@ -127,8 +127,12 @@ void main() {
           Focus.of(tester.element(title)).requestFocus();
           await tester.pumpAndSettle();
           await press(tester, LogicalKeyboardKey.select);
-          await press(tester, LogicalKeyboardKey.arrowDown);
-          await press(tester, LogicalKeyboardKey.arrowDown);
+          final source = find.text('黄豆');
+          for (var index = 0; index < SourceSite.values.length + 1; index++) {
+            if (Focus.of(tester.element(source)).hasPrimaryFocus) break;
+            await press(tester, LogicalKeyboardKey.arrowDown);
+          }
+          expect(Focus.of(tester.element(source)).hasPrimaryFocus, isTrue);
           await press(tester, LogicalKeyboardKey.select);
         }
         expect(
