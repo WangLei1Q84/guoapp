@@ -297,6 +297,14 @@ func (stream *nativeStreamServer) nativeServe(writer http.ResponseWriter, reques
 		finalURL = response.Request.URL
 	}
 	playlist := strings.Contains(asset.contentType, "mpegurl") || strings.Contains(contentType, "mpegurl") || strings.HasSuffix(strings.ToLower(finalURL.Path), ".m3u8")
+	if !playlist && request.Method == http.MethodGet && strings.Contains(contentType, "octet-stream") {
+		probe, readErr := io.ReadAll(io.LimitReader(response.Body, 4<<20+1))
+		response.Body = io.NopCloser(io.MultiReader(bytes.NewReader(probe), response.Body))
+		if readErr == nil && len(probe) <= 4<<20 {
+			text := bytes.TrimSpace(bytes.TrimPrefix(probe, []byte("\xef\xbb\xbf")))
+			playlist = bytes.HasPrefix(text, []byte("#EXTM3U"))
+		}
+	}
 	if playlist && request.Method == http.MethodHead {
 		writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 		writer.WriteHeader(http.StatusOK)

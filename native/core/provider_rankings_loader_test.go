@@ -12,7 +12,7 @@ func rankingMergedFixture(board rankingBoard, page int, rows []map[string]any) s
 	key := "rank_" + board.path + "/page"
 	base := rankingFixture(board, page, rows)
 	base = strings.Split(base, "</script>")[0] + "</script>"
-	content, _ := json.Marshal(map[string]any{"isSuccess": true, "rankList": rows, "pagination": map[string]int{"pageNum": page, "totalPages": 2}})
+	content, _ := json.Marshal(map[string]any{"isSuccess": true, "rankList": rows, "pagination": map[string]int{"pageNum": page, "totalPages": page}})
 	args, _ := json.Marshal([]any{key, []any{map[string]any{"key": "content", "routerDataFnName": "p", "routerDataFnArgs": []string{string(content)}}}})
 	return base + `<script data-script-src="modern-run-window-fn" data-fn-name="mergeLoaderData" data-fn-args="` + html.EscapeString(string(args)) + `"></script>`
 }
