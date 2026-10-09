@@ -1,0 +1,29 @@
+name: Format source
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.4'
+          channel: stable
+      - run: dart format lib/catalog_filters.dart lib/danmaku_models.dart lib/danmaku_overlay.dart lib/downloads_screen.dart lib/recommendations_screen.dart lib/remote_widgets.dart lib/settings_screen.dart
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dart-formatted-source
+          path: |
+            lib/catalog_filters.dart
+            lib/danmaku_models.dart
+            lib/danmaku_overlay.dart
+            lib/downloads_screen.dart
+            lib/recommendations_screen.dart
+            lib/remote_widgets.dart
+            lib/settings_screen.dart
