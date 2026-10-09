@@ -19,7 +19,10 @@ void main() {
     SharedPreferences.setMockInitialValues({'source': 'huangdou'});
     final store = LocalStore(await SharedPreferences.getInstance());
     expect(appSlug, allSourcesEnabled ? 'zhenguojian' : 'hongguojian');
-    expect(store.sources.length, allSourcesEnabled ? 8 : 1);
+    expect(
+      store.sources.length,
+      allSourcesEnabled ? SourceSite.knownValues.length : 1,
+    );
     expect(
       SourceSite.values.any((source) => source.id == 'dsd'),
       allSourcesEnabled,
@@ -60,13 +63,21 @@ void main() {
       final library =
           (jsonDecode(backup)['libraries'] as Map)['default'] as Map;
       expect((library['favorites'] as List).map((row) => (row as Map)['id']), [
-        if (allSourcesEnabled) other.id else red.id,
+        other.id,
       ]);
       expect(library['history'], hasLength(2));
       await store.importBackup(backup);
       expect(store.preferences.getString('source'), 'huangdou');
       expect(store.history, hasLength(allSourcesEnabled ? 2 : 1));
-      expect(store.favorites.map((drama) => drama.id), [other.id]);
+      expect(store.favorites.map((drama) => drama.id), [
+        if (allSourcesEnabled) other.id,
+      ]);
+      final restored = jsonDecode(await store.exportBackup()) as Map;
+      final restoredLibrary = (restored['libraries'] as Map)['default'] as Map;
+      expect(
+        (restoredLibrary['favorites'] as List).map((row) => (row as Map)['id']),
+        [other.id],
+      );
       store.dispose();
     },
   );

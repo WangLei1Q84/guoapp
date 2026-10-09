@@ -132,7 +132,7 @@ MediaProbe fixtureProbe({
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test(
-    'merge retains every matching video and normalizes only the minority',
+    'merge retains matching video and normalizes incompatible AAC tracks',
     () {
       final plan = MergePlan.create([
         fixtureProbe(),
@@ -148,7 +148,8 @@ void main() {
         fixtureProbe(rate: 48000),
       ]);
       expect(audioOnly.videoTranscodes, 0);
-      expect(audioOnly.audioTranscodes, 1);
+      expect(audioOnly.audioTranscodes, 3);
+      expect(audioOnly.canonicalAac, isTrue);
       final identical = MergePlan.create([fixtureProbe(), fixtureProbe()]);
       expect(identical.videoTranscodes, 0);
       expect(identical.audioTranscodes, 0);
@@ -156,14 +157,26 @@ void main() {
   );
 
   test('missing audio gets silence without discarding existing sound', () {
-    final plan = MergePlan.create([
+    final probes = [
       fixtureProbe(audio: ''),
       fixtureProbe(audio: ''),
       fixtureProbe(),
-    ]);
+    ];
+    final plan = MergePlan.create(probes);
     expect(plan.audio, isNotNull);
     expect(plan.videoTranscodes, 0);
-    expect(plan.audioTranscodes, 1);
+    expect(plan.audioTranscodes, 3);
+    for (final entry in probes.indexed) {
+      final arguments = plan.normalizeArguments(
+        'input-${entry.$1}.mp4',
+        'output-${entry.$1}.ts',
+        entry.$2,
+        entry.$1,
+      );
+      expect(arguments, contains('aac_low'));
+      expect(arguments, contains(entry.$2.hasAudio ? '0:a:0' : '1:a:0'));
+      expect(arguments.contains('lavfi'), !entry.$2.hasAudio);
+    }
   });
 
   test(

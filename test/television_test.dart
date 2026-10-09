@@ -1,4 +1,5 @@
 import 'package:duanju_app/app_layout.dart';
+import 'package:duanju_app/detail_screen.dart';
 import 'package:duanju_app/local_store.dart';
 import 'package:duanju_app/main.dart';
 import 'package:duanju_app/models.dart';
@@ -138,6 +139,26 @@ void main() {
         await tester.pumpAndSettle();
         await press(tester, LogicalKeyboardKey.select);
         expect(repository.detailCalls, 1);
+        expect(find.text('这是一集 VIP 内容'), findsOneWidget);
+        await press(tester, LogicalKeyboardKey.goBack);
+        expect(find.text('这是一集 VIP 内容'), findsNothing);
+        expect(
+          FocusManager.instance.primaryFocus?.debugLabel,
+          'remote-${FixtureRepository.free.id}',
+        );
+        Navigator.of(
+          tester.element(find.byKey(ValueKey(FixtureRepository.free.id))),
+        ).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => DetailScreen(
+              drama: FixtureRepository.free,
+              repository: repository,
+              store: store,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(repository.detailCalls, 2);
         expect(find.byKey(const ValueKey('start-play')), findsOneWidget);
         focusRemote(tester, find.byKey(const ValueKey('episode-1')));
         await tester.pumpAndSettle();
