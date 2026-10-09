@@ -8,7 +8,7 @@ class BuildVariant:
 
     @property
     def name(self):
-        return '真果鉴' if self.all_sources else '红果鉴'
+        return 'เกิดใหม่'
 
     @property
     def slug(self):
