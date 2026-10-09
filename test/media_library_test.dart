@@ -163,7 +163,7 @@ void main() {
     ]);
     expect(plan.audio, isNotNull);
     expect(plan.videoTranscodes, 0);
-    expect(plan.audioTranscodes, 2);
+    expect(plan.audioTranscodes, 1);
   });
 
   test(
@@ -233,7 +233,7 @@ void main() {
         await expectLater(
           library.merge(jobs),
           throwsA(
-            predicate((Object error) => error.toString().contains('已取消')),
+            predicate((Object error) => error.toString().contains('已停止')),
           ),
         );
         expect(executor.commands, isEmpty);

@@ -60,7 +60,7 @@ void main() {
       final library =
           (jsonDecode(backup)['libraries'] as Map)['default'] as Map;
       expect((library['favorites'] as List).map((row) => (row as Map)['id']), [
-        other.id,
+        if (allSourcesEnabled) other.id else red.id,
       ]);
       expect(library['history'], hasLength(2));
       await store.importBackup(backup);

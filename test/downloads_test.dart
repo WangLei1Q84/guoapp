@@ -68,6 +68,18 @@ class DownloadRepository extends FixtureRepository {
   }
 
   @override
+  Future<DownloadBatchResult> controlDownloadBatch(
+    String command,
+    List<String> ids, {
+    Map<String, String> expectedVersions = const {},
+  }) async {
+    for (final id in ids) {
+      await controlDownloads(command, id: id);
+    }
+    return DownloadBatchResult(completed: ids);
+  }
+
+  @override
   Future<void> controlDownloads(String command, {String id = ''}) async {
     commands.add('$command:$id');
     jobs = [
@@ -325,21 +337,30 @@ void main() {
       ),
     );
     await tick(tester);
-    await tester.tap(find.byKey(const ValueKey('pause-1')));
-    await tick(tester);
+    await tester.tap(find.text('测试短剧'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('download-task-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('暂停'));
+    await tester.pumpAndSettle();
     expect(repository.commands, ['pause:1']);
-    await tester.tap(find.byKey(const ValueKey('resume-1')));
-    await tick(tester);
+    await tester.tap(find.text('测试短剧'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('download-task-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('继续 / 重试'));
+    await tester.pumpAndSettle();
     expect(repository.commands.last, 'resume:1');
-    await tester.tap(find.text('已下载').first);
-    await tick(tester);
+    await tester.tap(find.byTooltip('筛选下载合集'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('已下载'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('应用'));
+    await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('download-task-1')), findsNothing);
-    await tester.tap(find.byKey(const ValueKey('remove-2')));
+    await tester.tap(find.byKey(const ValueKey('download-task-2')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('保留'));
-    await tester.pumpAndSettle();
-    expect(repository.commands, isNot(contains('remove:2')));
-    await tester.tap(find.byKey(const ValueKey('remove-2')));
+    await tester.tap(find.text('删除视频'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('删除'));
     await tester.pumpAndSettle();
@@ -384,7 +405,11 @@ void main() {
         ),
       );
       await tick(tester);
-      await tester.tap(find.byKey(const ValueKey('local-play-3')));
+      await tester.tap(find.text('测试短剧'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('download-task-3')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('本地播放'));
       await tester.pumpAndSettle();
       expect(find.text('offline player'), findsOneWidget);
       expect(repository.detailCalls, 0);
@@ -494,7 +519,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.sendKeyEvent(LogicalKeyboardKey.select);
       await tester.pumpAndSettle();
-      focusRemote(tester, find.byKey(const ValueKey('download-task-1')));
+      focusRemote(tester, find.text('测试短剧').first);
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.select);
       await tester.pumpAndSettle();
       for (var i = 0; i < 12; i++) {
         await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);

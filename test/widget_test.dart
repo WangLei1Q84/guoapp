@@ -1,5 +1,6 @@
 import 'package:duanju_app/local_store.dart';
 import 'package:duanju_app/main.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:duanju_app/models.dart';
 import 'package:duanju_app/app_build.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'fixtures.dart';
 
 void main() {
+  MediaKit.ensureInitialized();
   Future<LocalStore> store() async {
     SharedPreferences.setMockInitialValues({});
     return LocalStore(await SharedPreferences.getInstance());
