@@ -569,7 +569,10 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.select);
       await tester.pumpAndSettle();
       expect(
-        find.descendant(of: find.byType(AlertDialog), matching: find.text('第 13 集')),
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('第 13 集'),
+        ),
         findsOneWidget,
       );
       await tester.sendKeyEvent(LogicalKeyboardKey.select);
