@@ -101,9 +101,7 @@ class MergePlan {
     final canonicalAac =
         audio != null &&
         audio.audio['codec_name'] == 'aac' &&
-        withAudio.any(
-          (probe) => probe.audioSignature != audio.audioSignature,
-        );
+        withAudio.any((probe) => probe.audioSignature != audio.audioSignature);
     if (vc.any((v) => v) && !{'h264', 'hevc'}.contains(video.videoCodec)) {
       throw AppFailure('多数分集为 ${video.videoCodec}，当前不能将其他格式转换为此编码；原文件已保留。');
     }
