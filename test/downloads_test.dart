@@ -1,5 +1,6 @@
 import 'package:duanju_app/core_bridge.dart';
 import 'package:duanju_app/detail_screen.dart';
+import 'package:duanju_app/download_collections.dart';
 import 'package:duanju_app/downloads_screen.dart';
 import 'package:duanju_app/home_screen.dart';
 import 'package:duanju_app/local_store.dart';
