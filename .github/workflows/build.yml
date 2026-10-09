@@ -76,7 +76,19 @@ jobs:
           flutter-version: '3.47.4'
           channel: stable
           cache: true
-      - run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'ndk;28.2.13676358'
+      - name: Install Android NDK
+        shell: bash
+        run: |
+          sdkmanager_path="$(command -v sdkmanager || true)"
+          if [ -z "$sdkmanager_path" ]; then
+            sdkmanager_path="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager -print -quit 2>/dev/null || true)"
+          fi
+          if [ -z "$sdkmanager_path" ]; then
+            echo "sdkmanager was not installed by setup-android" >&2
+            find "$ANDROID_HOME" -maxdepth 5 -type f -name sdkmanager -print >&2 || true
+            exit 1
+          fi
+          "$sdkmanager_path" --sdk_root="$ANDROID_HOME" 'ndk;28.2.13676358'
       - name: Configure Android signing
         run: python scripts/configure_signing.py
         env:
@@ -120,7 +132,7 @@ jobs:
           flutter-version: '3.47.4'
           channel: stable
           cache: true
-      - uses: egor-tensin/setup-mingw@v2
+      - uses: egor-tensin/setup-mingw@v3
         with:
           platform: x64
       - run: python scripts/build_windows.py ${{ matrix.arguments }}
